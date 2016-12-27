@@ -22,7 +22,6 @@ public class FilterBanedKeywordsServiceImpl implements FilterBanedKeywordsServic
 		
 		Set<String> keyWordSet = new HashSet();
 		keyWordSet.addAll(keyWord.getAllWord());
-		keyWordSet.add("你好");
 		
 		sensitiveWordMap = addSensitiveWordToHashMap(keyWordSet);
 		for(int i = 0 ; i < weiboContent.length() ; i++){
@@ -68,8 +67,8 @@ public class FilterBanedKeywordsServiceImpl implements FilterBanedKeywordsServic
 	 
 	 @SuppressWarnings({ "rawtypes"})
 		public int CheckSensitiveWord(String txt,int beginIndex,int matchType){
-			boolean  flag = false;    //敏感词结束标识位：用于敏感词只有1位的情况
-			int matchFlag = 0;     //匹配标识数默认为0
+			boolean  flag = false;    //Sensitive word end tag: This is used when the sensitive word has only one bit
+			int matchFlag = 0;     //The default number of matching identifiers is 0
 			char word = 0;
 			Map nowMap = sensitiveWordMap;
 			for(int i = beginIndex; i < txt.length() ; i++){
