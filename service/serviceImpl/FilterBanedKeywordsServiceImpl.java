@@ -1,7 +1,5 @@
 package cn.edu.bjtu.weibo.service.impl;
 
-//package cn.edu.bjtu.weibo.service.impl;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,8 +9,8 @@ import java.util.Set;
 public class FilterBanedKeywordsServiceImpl implements FilterBanedKeywordsService{
 	@SuppressWarnings("rawtypes")
 	private Map sensitiveWordMap = null;
-	public static int minMatchTYpe = 1;      //最小匹配规则
-	public static int maxMatchType = 2;      //最大匹配规则
+	public static int minMatchType = 1;      //Minimum matching Type
+	public static int maxMatchType = 2;      //Maximum matching Type
 	
 	@Override
 	
@@ -24,11 +22,12 @@ public class FilterBanedKeywordsServiceImpl implements FilterBanedKeywordsServic
 		
 		Set<String> keyWordSet = new HashSet();
 		keyWordSet.addAll(keyWord.getAllWord());
+		keyWordSet.add("你好");
 		
 		sensitiveWordMap = addSensitiveWordToHashMap(keyWordSet);
 		for(int i = 0 ; i < weiboContent.length() ; i++){
-			int matchFlag = this.CheckSensitiveWord(weiboContent, i, 1); //判断是否包含敏感字符
-			if(matchFlag > 0){    //大于0存在，返回true
+			int matchFlag = this.CheckSensitiveWord(weiboContent, i, 1); //Determines if sensitive characters are included
+			if(matchFlag > 0){    //more than 0 ，return true
 				flag = true;
 			}
 		}
@@ -37,30 +36,30 @@ public class FilterBanedKeywordsServiceImpl implements FilterBanedKeywordsServic
 	}
 
 	 private Map addSensitiveWordToHashMap(Set<String> keyWordSet) {  
-			Map sensitiveWordMap = new HashMap(keyWordSet.size());     //初始化敏感词容器，减少扩容操作  
+			Map sensitiveWordMap = new HashMap(keyWordSet.size());     //Initialize sensitive word containers to reduce expansion 
 	        String key = null;    
 	        Map nowMap = null;  
 	        Map<String, String> newWorMap = null;  
 	        //迭代keyWordSet  
 	        Iterator<String> iterator = keyWordSet.iterator();  
 	        while(iterator.hasNext()){  
-	            key = iterator.next();    //关键字  
+	            key = iterator.next();    //sensitive characters  
 	            nowMap = sensitiveWordMap;  
 	            for(int i = 0 ; i < key.length() ; i++){  
-	                char keyChar = key.charAt(i);       //转换成char型  
-	                Object wordMap = nowMap.get(keyChar);       //获取  
+	                char keyChar = key.charAt(i);       //Converted to char type 
+	                Object wordMap = nowMap.get(keyChar);
 	                  
-	                if(wordMap != null){        //如果存在该key，直接赋值  
+	                if(wordMap != null){        //If there is the key, direct assignment 
 	                    nowMap = (Map) wordMap;  
 	                }  
-	                else{     //不存在则，则构建一个map，同时将isEnd设置为0，因为他不是最后一个  
+	                else{     //If there is no key ,create a map and make isEnd 0,because it isn't the last one  
 	                    newWorMap = new HashMap<String,String>();  
-	                    newWorMap.put("isEnd", "0");     //不是最后一个  
+	                    newWorMap.put("isEnd", "0");     
 	                    nowMap.put(keyChar, newWorMap);  
 	                    nowMap = newWorMap;  
 	                }
 	                if(i == key.length() - 1){  
-	                    nowMap.put("isEnd", "1");    //最后一个  
+	                    nowMap.put("isEnd", "1");    //the last one
 	                }  
 	            }  
 	        } 
@@ -75,21 +74,21 @@ public class FilterBanedKeywordsServiceImpl implements FilterBanedKeywordsServic
 			Map nowMap = sensitiveWordMap;
 			for(int i = beginIndex; i < txt.length() ; i++){
 				word = txt.charAt(i);
-				nowMap = (Map) nowMap.get(word);     //获取指定key
-				if(nowMap != null){     //存在，则判断是否为最后一个
-					matchFlag++;     //找到相应key，匹配标识+1 
-					if("1".equals(nowMap.get("isEnd"))){       //如果为最后一个匹配规则,结束循环，返回匹配标识数
-						flag = true;       //结束标志位为true   
-						if(FilterBanedKeywordsServiceImpl.minMatchTYpe == matchType){    //最小规则，直接返回,最大规则还需继续查找
+				nowMap = (Map) nowMap.get(word);     //get the key
+				if(nowMap != null){     //if it exists, it is judged whether or not it is the last one
+					matchFlag++;     
+					if("1".equals(nowMap.get("isEnd"))){       //If it is the last matching rule, the loop is terminated and the matching identifier is returned
+						flag = true;       //the end flag is true   
+						if(FilterBanedKeywordsServiceImpl.minMatchType == matchType){    //Minimum rules, direct return. The maximum rule needs to be continued
 							break;
 						}
 					}
 				}
-				else{     //不存在，直接返回
+				else{     //it don't exist,
 					break;
 				}
 			}
-			if(matchFlag < 2 || !flag){        //长度必须大于等于1，为词 
+			if(matchFlag < 2 || !flag){        //The length must be greater than or equal to 1 
 				matchFlag = 0;
 			}
 			return matchFlag;
